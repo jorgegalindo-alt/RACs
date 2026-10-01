@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vicerrectoría de Medios y Mediaciones Pedagógicas - VIMEP | Asistente de Redacción de RACs</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .bloom-card {
+            transition: all 0.2s ease-in-out;
+        }
+        .bloom-card:hover {
+            transform: translateY(-2px);
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .connector-badge {
+            transition: all 0.15s ease;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-indigo-700 text-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="p-2.5 bg-indigo-600 rounded-lg border border-indigo-500 shrink-0">
+                    <i data-lucide="graduation-cap" class="w-8 h-8 text-indigo-100"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg sm:text-xl md:text-2xl font-bold tracking-tight text-white leading-snug">
+                        Vicerrectoría de Medios y Mediaciones Pedagógicas - VIMEP
+                    </h1>
+                    <p class="text-xs sm:text-sm text-indigo-200 font-medium mt-0.5">
+                        Asistente de Redacción de RACs con Conectores Dinámicos
+                    </p>
+                </div>
+            </div>
+            <button onclick="toggleExamplesModal()" class="flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-500 text-white px-3.5 py-2 rounded-lg text-xs sm:text-sm font-medium transition shadow-sm border border-indigo-400/30 shrink-0">
+                <i data-lucide="book-open" class="w-4 h-4"></i>
+                <span>Cargar Ejemplos por Área</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 w-full">
+
+        <!-- LEFT COLUMN: Stepper & Input Controls -->
+        <section class="lg:col-span-7 flex flex-col space-y-6">
+
+            <!-- Stepper Progress Header -->
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+                <div class="flex justify-between items-center mb-2">
+                    <span id="step-badge" class="text-xs font-semibold uppercase tracking-wider px-2.5 py-1 bg-indigo-100 text-indigo-700 rounded-full">Paso 1 de 5</span>
+                    <span id="step-title" class="text-xs sm:text-sm font-medium text-slate-500">Nivel Cognitivo (Bloom)</span>
+                </div>
+                <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                    <div id="progress-bar" class="bg-indigo-600 h-2.5 rounded-full transition-all duration-300" style="width: 20%;"></div>
+                </div>
+            </div>
+
+            <!-- STEP 1: Bloom Level -->
+            <div id="step-1" class="step-content bg-white p-5 sm:p-6 rounded-xl shadow-sm border border-slate-200 space-y-4">
+                <div>
+                    <h2 class="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+                        <i data-lucide="brain-circuit" class="w-5 h-5 text-emerald-600"></i>
+                        1. Selecciona el Nivel Cognitivo de Bloom
+                    </h2>
+                    <p class="text-xs sm:text-sm text-slate-600 mt-1">¿Qué grado de complejidad cognitiva alcanzará el estudiante en este RAC?</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="bloom-levels-container">
+                    <!-- Bloom cards rendered dynamically by JS -->
+                </div>
+
+                <div id="bloom-description" class="hidden p-3.5 rounded-lg bg-emerald-50 border border-emerald-200 text-xs text-emerald-900">
+                    <span class="font-semibold block mb-0.5">Definición pedagógica:</span>
+                    <p id="bloom-desc-text"></p>
+                </div>
+            </div>
+
+            <!-- STEP 2: Action Verb -->
+            <div id="step-2" class="step-content hidden bg-white p-5 sm:p-6 rounded-xl shadow-sm border border-slate-200 space-y-4">
+                <div>
+                    <h2 class="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+                        <i data-lucide="zap" class="w-5 h-5 text-emerald-600"></i>
+                        2. Verbo de Acción Observable
+                    </h2>
+                    <p class="text-xs sm:text-sm text-slate-600 mt-1">Elige un verbo medible y observable que encabece la redacción del RAC.</p>
+                </div>
+
+                <div class="space-y-3">
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider">Verbos sugeridos según la taxonomía:</label>
+                    <div id="verb-chips" class="flex flex-wrap gap-2 max-h-48 overflow-y-auto p-1">
+                        <!-- Verb chips inserted dynamically -->
+                    </div>
+
+                    <div class="pt-2">
+                        <label for="custom-verb" class="block text-xs font-medium text-slate-600 mb-1">O escribe un verbo personalizado (en infinitivo):</label>
+                        <input type="text" id="custom-verb" placeholder="Ej. Diagnosticar, Diseñar, Formular, Determinar..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 3: Knowledge Object -->
+            <div id="step-3" class="step-content hidden bg-white p-5 sm:p-6 rounded-xl shadow-sm border border-slate-200 space-y-4">
+                <div>
+                    <h2 class="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+                        <i data-lucide="book-open-check" class="w-5 h-5 text-sky-600"></i>
+                        3. Objeto de Conocimiento (¿Qué va a aprender o realizar?)
+                    </h2>
+                    <p class="text-xs sm:text-sm text-slate-600 mt-1">Saber, concepto, proceso, teoría o habilidad central objeto de la medición.</p>
+                </div>
+
+                <div class="space-y-3">
+                    <textarea id="input-object" rows="3" class="w-full p-3 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" placeholder="Ej. las propiedades termodinámicas de fluidos compresibles en procesos térmicos..."></textarea>
+                </div>
+            </div>
+
+            <!-- STEP 4: Connector 1 & Context -->
+            <div id="step-4" class="step-content hidden bg-white p-5 sm:p-6 rounded-xl shadow-sm border border-slate-200 space-y-4">
+                <div>
+                    <h2 class="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+                        <i data-lucide="sliders" class="w-5 h-5 text-amber-600"></i>
+                        4. Conector 1 y Contexto / Condición de Ejecución
+                    </h2>
+                    <p class="text-xs sm:text-sm text-slate-600 mt-1">Sintetiza la mediación, metodología, herramientas o escenario donde se aplica.</p>
+                </div>
+
+                <!-- Connector 1 Select/Chips -->
+                <div class="p-3 bg-amber-50 rounded-xl border border-amber-200 space-y-2">
+                    <label class="block text-xs font-semibold text-amber-900">Conector de Condición o Medio (Conector 1):</label>
+                    <div class="flex flex-wrap gap-1.5 mb-2" id="conn1-chips">
+                        <!-- Chips inserted dynamically -->
+                    </div>
+                    <input type="text" id="input-conn1" placeholder="Ej. mediante, a través de, aplicando, con base en..." class="w-full px-3 py-1.5 border border-amber-300 rounded-lg text-xs bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-xs font-semibold text-slate-700">Contexto, Estrategia o Herramienta de Ejecución:</label>
+                    <textarea id="input-context" rows="2" class="w-full p-3 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Ej. software especializado de simulación en laboratorios virtuales..."></textarea>
+                </div>
+            </div>
+
+            <!-- STEP 5: Connector 2 & Finality -->
+            <div id="step-5" class="step-content hidden bg-white p-5 sm:p-6 rounded-xl shadow-sm border border-slate-200 space-y-4">
+                <div>
+                    <h2 class="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+                        <i data-lucide="target" class="w-5 h-5 text-purple-600"></i>
+                        5. Conector 2 y Finalidad / Propósito
+                    </h2>
+                    <p class="text-xs sm:text-sm text-slate-600 mt-1">Expresa el beneficio pedagógico, propósito o impacto práctico del logro.</p>
+                </div>
+
+                <!-- Connector 2 Select/Chips -->
+                <div class="p-3 bg-purple-50 rounded-xl border border-purple-200 space-y-2">
+                    <label class="block text-xs font-semibold text-purple-900">Conector de Finalidad o Impacto (Conector 2):</label>
+                    <div class="flex flex-wrap gap-1.5 mb-2" id="conn2-chips">
+                        <!-- Chips inserted dynamically -->
+                    </div>
+                    <input type="text" id="input-conn2" placeholder="Ej. para, con el fin de, garantizando, con la finalidad de..." class="w-full px-3 py-1.5 border border-purple-300 rounded-lg text-xs bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-xs font-semibold text-slate-700">Finalidad, Propósito o Impacto Esperado:</label>
+                    <textarea id="input-evidence" rows="2" class="w-full p-3 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Ej. optimizar los procesos de transferencia energética en sistemas industriales."></textarea>
+                </div>
+            </div>
+
+            <!-- Stepper Controls -->
+            <div class="flex justify-between items-center pt-2">
+                <button id="btn-prev" onclick="changeStep(-1)" class="px-4 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-xs sm:text-sm font-medium transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5" disabled>
+                    <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                    Anterior
+                </button>
+                
+                <button id="btn-next" onclick="changeStep(1)" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs sm:text-sm font-medium transition shadow-md flex items-center gap-1.5">
+                    Siguiente
+                    <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+        </section>
+
+        <!-- RIGHT COLUMN: LIVE BUILDER & ANALYZER -->
+        <section class="lg:col-span-5 flex flex-col space-y-6">
+
+            <!-- MAIN LIVE BUILDER CARD -->
+            <div class="bg-white p-5 rounded-xl shadow-md border-2 border-indigo-200 relative">
+                
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="text-xs sm:text-sm font-bold text-slate-900 flex items-center gap-2">
+                        <i data-lucide="sparkles" class="w-4 h-4 text-indigo-600"></i>
+                        Live Builder - RAC Unificado
+                    </h3>
+                    <span class="text-[10px] bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider">Vista Previa</span>
+                </div>
+
+                <!-- Structured Interactive Preview Box -->
+                <div class="bg-slate-950 text-slate-100 p-4 rounded-xl text-xs sm:text-sm leading-relaxed min-h-[140px] flex flex-col justify-between shadow-inner space-y-3">
+                    
+                    <div id="ra-preview" class="font-normal leading-relaxed break-words">
+                        <!-- Verb -->
+                        <span id="prev-verb" class="text-emerald-400 font-bold underline decoration-emerald-500/40 underline-offset-4 cursor-pointer hover:bg-emerald-950 px-1 rounded transition" title="Haz clic para cambiar el Verbo" onclick="goToStep(2)">[Verbo]</span>
+                        
+                        <!-- Object -->
+                        <span id="prev-object" class="text-sky-300 cursor-pointer hover:bg-sky-950 px-1 rounded transition" title="Haz clic para cambiar el Objeto" onclick="goToStep(3)">[Objeto de Conocimiento]</span>
+                        
+                        <!-- Connector 1 -->
+                        <span id="prev-conn1" class="text-amber-400 font-medium italic underline decoration-amber-500/40 underline-offset-4 cursor-pointer hover:bg-amber-950 px-1 rounded transition" title="Haz clic para ajustar Conector 1" onclick="goToStep(4)">[Conector 1]</span>
+                        
+                        <!-- Context -->
+                        <span id="prev-context" class="text-amber-200 cursor-pointer hover:bg-amber-950 px-1 rounded transition" title="Haz clic para ajustar Contexto" onclick="goToStep(4)">[Contexto/Condición]</span>
+                        
+                        <!-- Connector 2 -->
+                        <span id="prev-conn2" class="text-purple-400 font-medium italic underline decoration-purple-500/40 underline-offset-4 cursor-pointer hover:bg-purple-950 px-1 rounded transition" title="Haz clic para ajustar Conector 2" onclick="goToStep(5)">[Conector 2]</span>
+                        
+                        <!-- Evidence -->
+                        <span id="prev-evidence" class="text-purple-200 cursor-pointer hover:bg-purple-950 px-1 rounded transition" title="Haz clic para ajustar Finalidad" onclick="goToStep(5)">[Finalidad/Propósito]</span>.
+                    </div>
+
+                    <!-- Actions Bottom Bar -->
+                    <div class="pt-3 border-t border-slate-800 flex justify-between items-center text-xs text-slate-400">
+                        <span id="word-count" class="font-mono text-slate-500">0 palabras</span>
+                        <div class="flex items-center gap-2 sm:gap-3">
+                            <button onclick="toggleDirectEditModal()" class="text-amber-300 hover:text-amber-200 flex items-center gap-1 transition text-xs">
+                                <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                                <span>Edición Libre</span>
+                            </button>
+                            <button onclick="copyToClipboard()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-2.5 py-1 rounded-md flex items-center gap-1 transition shadow">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                                <span id="copy-btn-text">Copiar RAC</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Color Legend Code -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-3 text-[11px] text-slate-600 font-medium">
+                    <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Verbo</div>
+                    <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-sky-400"></span> Objeto (Qué)</div>
+                    <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span> Conector 1</div>
+                    <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-300"></span> Contexto (Cómo)</div>
+                    <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-purple-400"></span> Conector 2</div>
+                    <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-purple-300"></span> Propósito (Para qué)</div>
+                </div>
+            </div>
+
+            <!-- Diagnostic Checklist Box -->
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+                <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2 mb-3">
+                    <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i>
+                    Diagnóstico de Calidad Pedagógica
+                </h3>
+
+                <ul class="space-y-2 text-xs" id="quality-checklist">
+                    <li id="check-verb" class="flex items-start gap-2 text-slate-400">
+                        <i data-lucide="circle" class="w-4 h-4 shrink-0 mt-0.5"></i>
+                        <span>Verbo observable seleccionado.</span>
+                    </li>
+                    <li id="check-object" class="flex items-start gap-2 text-slate-400">
+                        <i data-lucide="circle" class="w-4 h-4 shrink-0 mt-0.5"></i>
+                        <span>Objeto de conocimiento especificado.</span>
+                    </li>
+                    <li id="check-context" class="flex items-start gap-2 text-slate-400">
+                        <i data-lucide="circle" class="w-4 h-4 shrink-0 mt-0.5"></i>
+                        <span>Contexto o escenario de aplicación.</span>
+                    </li>
+                    <li id="check-evidence" class="flex items-start gap-2 text-slate-400">
+                        <i data-lucide="circle" class="w-4 h-4 shrink-0 mt-0.5"></i>
+                        <span>Finalidad pedagógica o propósito.</span>
+                    </li>
+                </ul>
+
+                <div id="ambiguous-warning" class="hidden mt-3 p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-800 flex items-start gap-2">
+                    <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600 shrink-0 mt-0.5"></i>
+                    <div>
+                        <strong>Verbo ambiguo detectado:</strong> Términos como <em>saber, comprender, entender, o aprender</em> dificultan la medición. Reemplázalos por verbos medibles (ej. <em>clasificar, calcular, evaluar</em>).
+                    </div>
+                </div>
+            </div>
+
+            <!-- Saved RAs Section -->
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 flex-1 flex flex-col">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                        <i data-lucide="bookmark" class="w-4 h-4 text-indigo-600"></i>
+                        RACs Guardados
+                    </h3>
+                    <button onclick="saveCurrentRA()" class="text-xs text-indigo-600 hover:text-indigo-800 font-semibold flex items-center gap-1">
+                        <i data-lucide="plus" class="w-3.5 h-3.5"></i> Guardar RAC
+                    </button>
+                </div>
+
+                <div id="saved-list" class="space-y-2 overflow-y-auto max-h-40 text-xs text-slate-600 flex-1">
+                    <p class="text-slate-400 italic text-center py-3">Aún no has guardado ningún resultado de aprendizaje.</p>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Modal Direct Full Text Edit -->
+    <div id="direct-edit-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-slate-100 space-y-4">
+            <div class="flex justify-between items-center pb-2 border-b border-slate-100">
+                <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                    <i data-lucide="edit-3" class="w-5 h-5 text-indigo-600"></i>
+                    Edición Libre del RAC Final
+                </h3>
+                <button onclick="toggleDirectEditModal()" class="text-slate-400 hover:text-slate-600">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <p class="text-xs text-slate-500">Ajusta directamente la frase completa para hacer correcciones sintácticas finales:</p>
+            
+            <textarea id="full-text-editor" rows="5" class="w-full p-3 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-sans leading-relaxed"></textarea>
+
+            <div class="flex justify-end gap-2 pt-2">
+                <button onclick="toggleDirectEditModal()" class="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg text-xs font-medium">Cancelar</button>
+                <button onclick="applyDirectEdit()" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-xs font-medium hover:bg-indigo-700">Aplicar Cambios</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Examples -->
+    <div id="examples-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
+                <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                    <i data-lucide="compass" class="w-5 h-5 text-indigo-600"></i>
+                    Plantillas RAC por Disciplina
+                </h3>
+                <button onclick="toggleExamplesModal()" class="text-slate-400 hover:text-slate-600">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <div class="space-y-4">
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-indigo-600">Ingeniería / Tecnología</span>
+                    <p class="text-xs font-medium text-slate-800 mt-1">"Diseñar un sistema de saneamiento hídrico <span class="text-amber-600 font-bold">mediante</span> herramientas de modelado numérico <span class="text-purple-600 font-bold">con el fin de</span> reducir el impacto ambiental en comunidades vulnerables."</p>
+                    <button onclick="loadExample('Diseñar', 'un sistema de saneamiento hídrico', 'mediante', 'herramientas de modelado numérico', 'con el fin de', 'reducir el impacto ambiental en comunidades vulnerables', 'Crear')" class="mt-2 text-xs text-indigo-600 hover:underline flex items-center gap-1 font-semibold">
+                        Cargar esta plantilla <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                    </button>
+                </div>
+
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-emerald-600">Ciencias de la Salud</span>
+                    <p class="text-xs font-medium text-slate-800 mt-1">"Diagnosticar cuadros clínicos respiratorios agudos <span class="text-amber-600 font-bold">a través de</span> pruebas funcionales y auscultación presencial <span class="text-purple-600 font-bold">para</span> formular planes terapéuticos oportunos."</p>
+                    <button onclick="loadExample('Diagnosticar', 'cuadros clínicos respiratorios agudos', 'a través de', 'pruebas funcionales y auscultación presencial', 'para', 'formular planes terapéuticos oportunos', 'Analizar')" class="mt-2 text-xs text-indigo-600 hover:underline flex items-center gap-1 font-semibold">
+                        Cargar esta plantilla <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                    </button>
+                </div>
+
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-amber-600">Ciencias Sociales / Educación</span>
+                    <p class="text-xs font-medium text-slate-800 mt-1">"Evaluar estrategias de inclusión socioeducativa <span class="text-amber-600 font-bold">aplicando</span> metodologías de investigación cualitativa <span class="text-purple-600 font-bold">a fin de</span> fundamentar ajustes de política pública."</p>
+                    <button onclick="loadExample('Evaluar', 'estrategias de inclusión socioeducativa', 'aplicando', 'metodologías de investigación cualitativa', 'a fin de', 'fundamentar ajustes de política pública', 'Evaluar')" class="mt-2 text-xs text-indigo-600 hover:underline flex items-center gap-1 font-semibold">
+                        Cargar esta plantilla <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Bloom Data Structure
+        const bloomData = [
+            {
+                level: "Recordar",
+                badge: "Nivel 1",
+                description: "Recuperar, reconocer y memorizar datos e información de la memoria.",
+                verbs: ["Definir", "Listar", "Identificar", "Mencionar", "Reconocer", "Nombrar", "Recordar", "Enunciar"]
+            },
+            {
+                level: "Comprender",
+                badge: "Nivel 2",
+                description: "Construir significado a partir de conceptos, textos y explicaciones.",
+                verbs: ["Explicar", "Describir", "Interpretar", "Resumir", "Clasificar", "Comparar", "Ejemplificar", "Discutir"]
+            },
+            {
+                level: "Aplicar",
+                badge: "Nivel 3",
+                description: "Utilizar un procedimiento o técnica en situaciones prácticas concretas.",
+                verbs: ["Calcular", "Demostrar", "Emplear", "Ilustrar", "Resolver", "Utilizar", "Ejecutar", "Implementar"]
+            },
+            {
+                level: "Analizar",
+                badge: "Nivel 4",
+                description: "Descomponer el conocimiento en sus partes e identificar relaciones interestructurales.",
+                verbs: ["Diferenciar", "Organizar", "Examinar", "Categorizar", "Diagnosticar", "Comparar críticamente", "Descomponer"]
+            },
+            {
+                level: "Evaluar",
+                badge: "Nivel 5",
+                description: "Emitir juicios fundamentados basados en criterios y estándares establecidos.",
+                verbs: ["Argumentar", "Validar", "Criticar", "Juzgar", "Justificar", "Evaluar", "Contrastar", "Ponderar"]
+            },
+            {
+                level: "Crear",
+                badge: "Nivel 6",
+                description: "Juntar elementos para formar un todo coherente o generar una nueva estructura.",
+                verbs: ["Diseñar", "Construir", "Formular", "Proponer", "Desarrollar", "Elaborar", "Crear", "Planear"]
+            }
+        ];
+
+        // Connectors List
+        const conn1Suggestions = ["mediante", "a través de", "aplicando", "utilizando", "haciendo uso de", "con base en", "según los estándares de"];
+        const conn2Suggestions = ["para", "con el fin de", "a fin de lograr", "con el propósito de", "garantizando", "orientado a", "permitiendo"];
+
+        // State Variables
+        let currentStep = 1;
+        let selectedBloom = null;
+        let selectedVerb = '';
+        let objectText = '';
+        let conn1Text = 'mediante';
+        let contextText = '';
+        let conn2Text = 'para';
+        let evidenceText = '';
+        let isDirectlyEdited = false;
+        let fullTextManual = '';
+        let savedRAs = [];
+
+        const ambiguousVerbs = ['saber', 'entender', 'comprender', 'aprender', 'internalizar', 'conocer', 'captar', 'dominar', 'tomar conciencia'];
+
+        const stepTitles = [
+            "Nivel Cognitivo (Bloom)",
+            "Verbo de Acción Observable",
+            "Objeto de Conocimiento",
+            "Conector 1 y Contexto",
+            "Conector 2 y Finalidad"
+        ];
+
+        window.onload = function() {
+            renderBloomLevels();
+            renderConnectorChips();
+            setupEventListeners();
+            updateUI();
+            lucide.createIcons();
+        };
+
+        function renderBloomLevels() {
+            const container = document.getElementById('bloom-levels-container');
+            container.innerHTML = '';
+
+            bloomData.forEach((item) => {
+                const card = document.createElement('div');
+                card.className = `bloom-card p-3.5 rounded-xl border border-slate-200 cursor-pointer transition hover:border-emerald-400 bg-white flex flex-col justify-between`;
+                card.onclick = () => selectBloomLevel(item);
+                card.id = `bloom-card-${item.level}`;
+
+                card.innerHTML = `
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">${item.badge}</span>
+                        </div>
+                        <h4 class="font-bold text-slate-800 text-sm">${item.level}</h4>
+                        <p class="text-xs text-slate-500 mt-1 leading-tight">${item.description}</p>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function renderConnectorChips() {
+            const c1Box = document.getElementById('conn1-chips');
+            const c2Box = document.getElementById('conn2-chips');
+
+            c1Box.innerHTML = '';
+            conn1Suggestions.forEach(c => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = `connector-badge px-2.5 py-1 rounded-md text-xs border border-amber-300 bg-amber-100/60 text-amber-900 hover:bg-amber-200 ${conn1Text === c ? 'ring-2 ring-amber-500 font-bold' : ''}`;
+                btn.textContent = c;
+                btn.onclick = () => setConnector1(c);
+                c1Box.appendChild(btn);
+            });
+
+            c2Box.innerHTML = '';
+            conn2Suggestions.forEach(c => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = `connector-badge px-2.5 py-1 rounded-md text-xs border border-purple-300 bg-purple-100/60 text-purple-900 hover:bg-purple-200 ${conn2Text === c ? 'ring-2 ring-purple-500 font-bold' : ''}`;
+                btn.textContent = c;
+                btn.onclick = () => setConnector2(c);
+                c2Box.appendChild(btn);
+            });
+        }
+
+        function setConnector1(val) {
+            conn1Text = val;
+            document.getElementById('input-conn1').value = val;
+            renderConnectorChips();
+            updateUI();
+        }
+
+        function setConnector2(val) {
+            conn2Text = val;
+            document.getElementById('input-conn2').value = val;
+            renderConnectorChips();
+            updateUI();
+        }
+
+        function selectBloomLevel(bloomObj) {
+            selectedBloom = bloomObj;
+            
+            // Highlight selected card
+            bloomData.forEach(item => {
+                const el = document.getElementById(`bloom-card-${item.level}`);
+                if (el) {
+                    if (item.level === bloomObj.level) {
+                        el.className = `bloom-card p-3.5 rounded-xl border-2 border-emerald-500 bg-emerald-50/30 shadow-sm cursor-pointer transition flex flex-col justify-between`;
+                    } else {
+                        el.className = `bloom-card p-3.5 rounded-xl border border-slate-200 bg-white cursor-pointer transition hover:border-emerald-400 flex flex-col justify-between`;
+                    }
+                }
+            });
+
+            // Show description box
+            const descBox = document.getElementById('bloom-description');
+            const descText = document.getElementById('bloom-desc-text');
+            descText.textContent = bloomObj.description;
+            descBox.classList.remove('hidden');
+
+            // Render Verb Chips
+            renderVerbChips();
+            updateUI();
+        }
+
+        function renderVerbChips() {
+            const container = document.getElementById('verb-chips');
+            container.innerHTML = '';
+
+            if (!selectedBloom) {
+                container.innerHTML = '<span class="text-xs text-slate-400 italic">Selecciona un nivel cognitivo primero.</span>';
+                return;
+            }
+
+            selectedBloom.verbs.forEach(v => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = `px-3 py-1.5 rounded-lg text-xs font-medium border transition ${selectedVerb === v ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm' : 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200'}`;
+                btn.textContent = v;
+                btn.onclick = () => {
+                    selectedVerb = v;
+                    document.getElementById('custom-verb').value = '';
+                    isDirectlyEdited = false;
+                    renderVerbChips();
+                    updateUI();
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        function setupEventListeners() {
+            document.getElementById('custom-verb').addEventListener('input', (e) => {
+                selectedVerb = e.target.value.trim();
+                isDirectlyEdited = false;
+                renderVerbChips();
+                updateUI();
+            });
+
+            document.getElementById('input-object').addEventListener('input', (e) => {
+                objectText = e.target.value;
+                isDirectlyEdited = false;
+                updateUI();
+            });
+
+            document.getElementById('input-conn1').addEventListener('input', (e) => {
+                conn1Text = e.target.value;
+                isDirectlyEdited = false;
+                renderConnectorChips();
+                updateUI();
+            });
+
+            document.getElementById('input-context').addEventListener('input', (e) => {
+                contextText = e.target.value;
+                isDirectlyEdited = false;
+                updateUI();
+            });
+
+            document.getElementById('input-conn2').addEventListener('input', (e) => {
+                conn2Text = e.target.value;
+                isDirectlyEdited = false;
+                renderConnectorChips();
+                updateUI();
+            });
+
+            document.getElementById('input-evidence').addEventListener('input', (e) => {
+                evidenceText = e.target.value;
+                isDirectlyEdited = false;
+                updateUI();
+            });
+        }
+
+        function changeStep(delta) {
+            const nextStep = currentStep + delta;
+            if (nextStep >= 1 && nextStep <= 5) {
+                goToStep(nextStep);
+            }
+        }
+
+        function goToStep(stepNumber) {
+            currentStep = stepNumber;
+
+            // Hide all steps
+            for (let i = 1; i <= 5; i++) {
+                const el = document.getElementById(`step-${i}`);
+                if (el) el.classList.add('hidden');
+            }
+
+            // Show active step
+            const activeEl = document.getElementById(`step-${currentStep}`);
+            if (activeEl) activeEl.classList.remove('hidden');
+
+            // Update Header progress
+            document.getElementById('step-badge').textContent = `Paso ${currentStep} de 5`;
+            document.getElementById('step-title').textContent = stepTitles[currentStep - 1];
+            document.getElementById('progress-bar').style.width = `${currentStep * 20}%`;
+
+            // Buttons state
+            document.getElementById('btn-prev').disabled = (currentStep === 1);
+            const btnNext = document.getElementById('btn-next');
+            if (currentStep === 5) {
+                btnNext.innerHTML = 'Finalizar RAC <i data-lucide="check" class="w-4 h-4"></i>';
+            } else {
+                btnNext.innerHTML = 'Siguiente <i data-lucide="chevron-right" class="w-4 h-4"></i>';
+            }
+            lucide.createIcons();
+        }
+
+        function updateUI() {
+            // Live Preview elements
+            const pVerb = document.getElementById('prev-verb');
+            const pObject = document.getElementById('prev-object');
+            const pConn1 = document.getElementById('prev-conn1');
+            const pContext = document.getElementById('prev-context');
+            const pConn2 = document.getElementById('prev-conn2');
+            const pEvidence = document.getElementById('prev-evidence');
+            const pBox = document.getElementById('ra-preview');
+
+            if (isDirectlyEdited) {
+                pBox.innerHTML = `<span class="text-indigo-200 font-medium">${fullTextManual}</span>`;
+            } else {
+                pBox.innerHTML = `
+                    <span id="prev-verb" class="text-emerald-400 font-bold underline decoration-emerald-500/40 underline-offset-4 cursor-pointer hover:bg-emerald-950 px-1 rounded transition" title="Haz clic para cambiar el Verbo" onclick="goToStep(2)">${selectedVerb || '[Verbo]'}</span>
+                    <span id="prev-object" class="text-sky-300 cursor-pointer hover:bg-sky-950 px-1 rounded transition" title="Haz clic para cambiar el Objeto" onclick="goToStep(3)">${objectText ? ' ' + objectText : ' [Objeto de Conocimiento]'}</span>
+                    <span id="prev-conn1" class="text-amber-400 font-medium italic underline decoration-amber-500/40 underline-offset-4 cursor-pointer hover:bg-amber-950 px-1 rounded transition" title="Haz clic para ajustar Conector 1" onclick="goToStep(4)">${conn1Text ? ' ' + conn1Text : ' [Conector 1]'}</span>
+                    <span id="prev-context" class="text-amber-200 cursor-pointer hover:bg-amber-950 px-1 rounded transition" title="Haz clic para ajustar Contexto" onclick="goToStep(4)">${contextText ? ' ' + contextText : ' [Contexto/Condición]'}</span>
+                    <span id="prev-conn2" class="text-purple-400 font-medium italic underline decoration-purple-500/40 underline-offset-4 cursor-pointer hover:bg-purple-950 px-1 rounded transition" title="Haz clic para ajustar Conector 2" onclick="goToStep(5)">${conn2Text ? ' ' + conn2Text : ' [Conector 2]'}</span>
+                    <span id="prev-evidence" class="text-purple-200 cursor-pointer hover:bg-purple-950 px-1 rounded transition" title="Haz clic para ajustar Finalidad" onclick="goToStep(5)">${evidenceText ? ' ' + evidenceText : ' [Finalidad/Propósito]'}</span>.
+                `;
+            }
+
+            // Word Count
+            const fullStr = getFullRACText();
+            const words = fullStr.trim() ? fullStr.trim().split(/\s+/).length : 0;
+            document.getElementById('word-count').textContent = `${words} palabras`;
+
+            // Diagnostic Quality Checklist
+            updateChecklist();
+        }
+
+        function getFullRACText() {
+            if (isDirectlyEdited) {
+                return fullTextManual;
+            }
+            const parts = [
+                selectedVerb,
+                objectText,
+                conn1Text,
+                contextText,
+                conn2Text,
+                evidenceText
+            ].filter(p => p && p.trim() !== '');
+
+            let text = parts.join(' ').replace(/\s+/g, ' ').trim();
+            if (text && !text.endsWith('.')) {
+                text += '.';
+            }
+            return text;
+        }
+
+        function updateChecklist() {
+            // Check Verb
+            const checkVerb = document.getElementById('check-verb');
+            const isVerbValid = selectedVerb && selectedVerb.trim() !== '' && selectedVerb !== '[Verbo]';
+            setCheckItem(checkVerb, isVerbValid, "Verbo observable seleccionado.");
+
+            // Check Object
+            const checkObj = document.getElementById('check-object');
+            const isObjValid = objectText && objectText.trim() !== '';
+            setCheckItem(checkObj, isObjValid, "Objeto de conocimiento especificado.");
+
+            // Check Context
+            const checkCtx = document.getElementById('check-context');
+            const isCtxValid = contextText && contextText.trim() !== '';
+            setCheckItem(checkCtx, isCtxValid, "Contexto o escenario de aplicación.");
+
+            // Check Evidence
+            const checkEvi = document.getElementById('check-evidence');
+            const isEviValid = evidenceText && evidenceText.trim() !== '';
+            setCheckItem(checkEvi, isEviValid, "Finalidad pedagógica o propósito.");
+
+            // Ambiguous Verb Detector
+            const warningBox = document.getElementById('ambiguous-warning');
+            const verbLower = (selectedVerb || '').toLowerCase().trim();
+            if (ambiguousVerbs.includes(verbLower)) {
+                warningBox.classList.remove('hidden');
+            } else {
+                warningBox.classList.add('hidden');
+            }
+            lucide.createIcons();
+        }
+
+        function setCheckItem(el, isValid, text) {
+            if (isValid) {
+                el.className = "flex items-start gap-2 text-emerald-600 font-medium";
+                el.innerHTML = `<i data-lucide="check-circle-2" class="w-4 h-4 shrink-0 mt-0.5 text-emerald-600"></i> <span>${text}</span>`;
+            } else {
+                el.className = "flex items-start gap-2 text-slate-400";
+                el.innerHTML = `<i data-lucide="circle" class="w-4 h-4 shrink-0 mt-0.5"></i> <span>${text}</span>`;
+            }
+        }
+
+        function toggleDirectEditModal() {
+            const modal = document.getElementById('direct-edit-modal');
+            const editor = document.getElementById('full-text-editor');
+            if (modal.classList.contains('hidden')) {
+                editor.value = getFullRACText();
+                modal.classList.remove('hidden');
+            } else {
+                modal.classList.add('hidden');
+            }
+        }
+
+        function applyDirectEdit() {
+            const editor = document.getElementById('full-text-editor');
+            fullTextManual = editor.value.trim();
+            isDirectlyEdited = true;
+            toggleDirectEditModal();
+            updateUI();
+        }
+
+        function toggleExamplesModal() {
+            const modal = document.getElementById('examples-modal');
+            modal.classList.toggle('hidden');
+        }
+
+        function loadExample(verb, object, conn1, context, conn2, evidence, bloomName) {
+            selectedVerb = verb;
+            objectText = object;
+            conn1Text = conn1;
+            contextText = context;
+            conn2Text = conn2;
+            evidenceText = evidence;
+            isDirectlyEdited = false;
+
+            // Update form inputs
+            document.getElementById('custom-verb').value = verb;
+            document.getElementById('input-object').value = object;
+            document.getElementById('input-conn1').value = conn1;
+            document.getElementById('input-context').value = context;
+            document.getElementById('input-conn2').value = conn2;
+            document.getElementById('input-evidence').value = evidence;
+
+            // Find bloom
+            const bloomObj = bloomData.find(b => b.level === bloomName);
+            if (bloomObj) {
+                selectBloomLevel(bloomObj);
+            }
+
+            renderConnectorChips();
+            updateUI();
+            toggleExamplesModal();
+            goToStep(1);
+        }
+
+        function copyToClipboard() {
+            const textToCopy = getFullRACText();
+            if (!textToCopy || textToCopy === '.') return;
+
+            const tempInput = document.createElement('textarea');
+            tempInput.value = textToCopy;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+
+            const btnText = document.getElementById('copy-btn-text');
+            const oldText = btnText.textContent;
+            btnText.textContent = '¡Copiado!';
+            setTimeout(() => {
+                btnText.textContent = oldText;
+            }, 2000);
+        }
+
+        function saveCurrentRA() {
+            const raText = getFullRACText();
+            if (!raText || raText === '.') return;
+
+            savedRAs.push({
+                id: Date.now(),
+                text: raText,
+                bloom: selectedBloom ? selectedBloom.level : 'General'
+            });
+
+            renderSavedList();
+        }
+
+        function deleteSavedRA(id) {
+            savedRAs = savedRAs.filter(item => item.id !== id);
+            renderSavedList();
+        }
+
+        function renderSavedList() {
+            const container = document.getElementById('saved-list');
+            if (savedRAs.length === 0) {
+                container.innerHTML = '<p class="text-slate-400 italic text-center py-3">Aún no has guardado ningún resultado de aprendizaje.</p>';
+                return;
+            }
+
+            container.innerHTML = '';
+            savedRAs.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = "p-2.5 rounded-lg bg-slate-50 border border-slate-200 flex justify-between items-start gap-2 text-xs hover:border-indigo-300 transition";
+                card.innerHTML = `
+                    <div class="space-y-1 flex-1">
+                        <span class="inline-block text-[9px] font-bold uppercase tracking-wider text-indigo-700 bg-indigo-50 px-1.5 py-0.5 rounded">
+                            RAC ${index + 1} • ${item.bloom}
+                        </span>
+                        <p class="text-slate-700 font-medium leading-relaxed">${item.text}</p>
+                    </div>
+                    <button onclick="deleteSavedRA(${item.id})" class="text-slate-400 hover:text-red-500 p-1 transition" title="Eliminar RAC">
+                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                    </button>
+                `;
+                container.appendChild(card);
+            });
+            lucide.createIcons();
+        }
+    </script>
+</body>
+</html>
